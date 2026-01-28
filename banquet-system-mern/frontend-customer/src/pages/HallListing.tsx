@@ -16,6 +16,7 @@ const HallListing = () => {
   const [halls, setHalls] = useState<Hall[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [selectedVideo, setSelectedVideo] = useState<string | null>(null);
 
   useEffect(() => {
     fetchHalls();
@@ -48,6 +49,15 @@ const HallListing = () => {
     }
   };
 
+  const getEmbedUrl = (url: string) => {
+    if (!url) return '';
+    // Handle both youtube.com/watch?v= and youtu.be/ formats if needed, 
+    // but assuming standard format as per prompt logic
+    const videoId = url.split('v=')[1]?.split('&')[0];
+    if (!videoId) return url; // Fallback
+    return `https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0`;
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -76,7 +86,7 @@ const HallListing = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-12">
+    <div className="min-h-screen bg-gray-50 py-12 relative">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="text-center mb-12">
@@ -142,7 +152,7 @@ const HallListing = () => {
 
                 {/* 360° View Button */}
                 <button
-                  onClick={() => window.open(hall.panoramaUrl, '_blank')}
+                  onClick={() => setSelectedVideo(hall.panoramaUrl)}
                   className="w-full bg-oberoi-gold hover:bg-yellow-600 text-white font-semibold py-3 px-4 rounded-lg transition-colors duration-200 flex items-center justify-center gap-2"
                 >
                   <ExternalLink size={20} />
@@ -160,6 +170,31 @@ const HallListing = () => {
           </div>
         )}
       </div>
+
+      {/* THE MODAL OVERLAY */}
+      {selectedVideo && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-90 p-4">
+          <div className="relative w-full max-w-4xl aspect-video bg-black rounded-lg shadow-2xl border border-gray-700">
+
+            {/* Close Button */}
+            <button
+              onClick={() => setSelectedVideo(null)}
+              className="absolute -top-10 right-0 text-white hover:text-red-500 text-xl font-bold flex items-center gap-1"
+            >
+              ✕ CLOSE
+            </button>
+
+            {/* The 360 Player */}
+            <iframe
+              src={getEmbedUrl(selectedVideo)}
+              title="360 Tour"
+              className="w-full h-full rounded-lg"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+            ></iframe>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
