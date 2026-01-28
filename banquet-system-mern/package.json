@@ -1,0 +1,19 @@
+{
+    "name": "banquet-system-mern",
+    "version": "1.0.0",
+    "private": true,
+    "description": "Pure MERN Banquet Booking System (No Docker/Redis)",
+    "scripts": {
+        "start:all": "concurrently \"npm run start:backend\" \"npm run start:admin\" \"npm run start:customer\"",
+        "start:backend": "cd backend && npm run dev",
+        "start:admin": "cd frontend-admin && npm run dev",
+        "start:customer": "cd frontend-customer && npm run dev",
+        "install:all": "npm install && cd backend && npm install && cd ../frontend-admin && npm install && cd ../frontend-customer && npm install"
+    },
+    "devDependencies": {
+        "autoprefixer": "^10.4.23",
+        "concurrently": "^8.2.2",
+        "postcss": "^8.5.6",
+        "tailwindcss": "^4.1.18"
+    }
+}
